@@ -1,5 +1,8 @@
 #include <iostream>
 #include <string>
+#include <cctype> //isdigit
+#include <limits>
+#include <regex>
 
 using namespace std;
 
@@ -22,26 +25,12 @@ void SystemPause()
 #endif
 }
 
-bool isValidNumericString(const std::string &input)
+bool isNumeric(const std::string& str)
 {
-    bool Decimal = false;
-
-    for (char ch : input)
-    {
-        if (ch == '.')
-        {
-            if (Decimal)
-            {
-                return false;
-            }
-            Decimal = true;
-        }
-        else if (!isdigit(ch))
-        {
-            return false;
-        }
+    for (char const& c : str) {
+        if (std::isdigit(c) == 0) return false;
     }
-    return !input.empty(); 
+    return true;
 }
 
 class Item {
@@ -105,11 +94,13 @@ public:
         int quantity;
         double price;
 
-        cout << "Enter category: ";
+        cout << "Enter category (Clothing, Electronics, Entertainment): ";
         cin >> category;
 
         if (!isValidCategory(category)) {
+            cout << endl; 
             cout << "Category " << category << " does not exist!" << endl;
+            cout << "Please enter a valid category." << endl;
             return;
         }
 
@@ -185,8 +176,11 @@ public:
     // Display items by category
     void displayItemsByCategory() {
         string category;
-        cout << "Enter category: ";
+        cout << "Enter category (Clothing, Electronics, Entertainment):";
+        cout << endl; 
         cin >> category;
+
+        toLowerCase(category);
 
         if (!isValidCategory(category)) {
             cout << "Category " << category << " does not exist!" << endl;
@@ -273,6 +267,34 @@ public:
     }
 };
 
+bool isValidNumericString(const string &input)
+{
+    bool decimal = false;
+
+    for (char ch : input)
+    {
+        if (ch == '.')
+        {
+            if (decimal) // Only allow one decimal point
+            {
+                return false;
+            }
+            decimal = true;
+        }
+        else if (!isdigit(ch)) // Check if each character is a digit
+        {
+            return false;
+        }
+    }
+    return !input.empty(); // Return false if the string is empty
+}
+
+string toLowerCase(const string &str){
+    string lowerStr = str;
+    transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+    return lowerStr;
+}
+
 int main() {
     Inventory inventory;
     int choice;
@@ -294,13 +316,6 @@ int main() {
 
         isValidNumericString(to_string(choice));
 
-        //make a validation for the input choice to be an integer
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore();
-            cout << "Invalid choice! Please try again." << endl;
-            continue;
-        }
 
         //make a validation for the input choice to be between 1 and 9
         if (choice < 1 || choice > 9) {
@@ -340,6 +355,8 @@ int main() {
         default:
             cout << "Invalid choice! Please try again." << endl;
         }
+
+
     }
 
     return 0;
