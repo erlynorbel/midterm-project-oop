@@ -3,6 +3,47 @@
 
 using namespace std;
 
+// System Clear, Pause, Numeric Checker
+void SystemClear()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+};
+
+void SystemPause()
+{
+#ifdef _WIN32
+    system("pause");
+#else
+    std::cin.get();
+#endif
+}
+
+bool isValidNumericString(const std::string &input)
+{
+    bool Decimal = false;
+
+    for (char ch : input)
+    {
+        if (ch == '.')
+        {
+            if (Decimal)
+            {
+                return false;
+            }
+            Decimal = true;
+        }
+        else if (!isdigit(ch))
+        {
+            return false;
+        }
+    }
+    return !input.empty(); 
+}
+
 class Item {
 private:
     string id;
@@ -236,11 +277,12 @@ int main() {
     Inventory inventory;
     int choice;
 
-    do {
+    bool userContinue = true;
+    while (userContinue) {
         cout << "\nMenu\n";
         cout << "1 - Add Item\n";
         cout << "2 - Update Item\n";
-        cout << "3 - Remove Item\n";
+        cout << "3 - Remove Item\n";    
         cout << "4 - Display Items by Category\n";
         cout << "5 - Display All Items\n";
         cout << "6 - Search Item\n";
@@ -249,6 +291,23 @@ int main() {
         cout << "9 - Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
+
+        isValidNumericString(to_string(choice));
+
+        //make a validation for the input choice to be an integer
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore();
+            cout << "Invalid choice! Please try again." << endl;
+            continue;
+        }
+
+        //make a validation for the input choice to be between 1 and 9
+        if (choice < 1 || choice > 9) {
+            cout << "Invalid choice! Please try again." << endl;
+            continue;
+        }
+        
 
         switch (choice) {
         case 1:
@@ -277,12 +336,11 @@ int main() {
             break;
         case 9:
             cout << "Exiting program..." << endl;
-            break;
+            return 0;  // Exits the program
         default:
             cout << "Invalid choice! Please try again." << endl;
         }
-
-    } while (choice != 9);
+    }
 
     return 0;
 }
